@@ -1,18 +1,22 @@
 FROM debian:9
 
-RUN apt-get update && apt-get install -yq cmake subversion git build-essential
+RUN apt-get update && apt-get install -yq cmake git build-essential python python-dev
 
 WORKDIR /opt
 
-RUN svn co http://llvm.org/svn/llvm-project/llvm/trunk llvm
+RUN git clone https://github.com/llvm-mirror/llvm llvm
 
-RUN cd llvm/tools && svn co http://llvm.org/svn/llvm-project/cfe/trunk clang
+RUN cd llvm/tools && git clone https://github.com/llvm-mirror/clang
 
-RUN cd llvm/tools/clang/tools && svn co http://llvm.org/svn/llvm-project/clang-tools-extra/trunk extra
+RUN cd llvm/tools/clang/tools && git clone https://github.com/llvm-mirror/clang-tools-extra extra
 
-RUN cd llvm/projects && svn co http://llvm.org/svn/llvm-project/compiler-rt/trunk compiler-rt
+RUN cd llvm/projects && git clone https://github.com/llvm-mirror/compiler-rt compiler-rt
 
-RUN cd llvm/projects && svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx
+RUN cd llvm/projects && git clone https://github.com/llvm-mirror/libcxx libcxx
 
 RUN mkdir -p build && cd build && cmake -G "Unix Makefiles" ../llvm
 
+
+RUN cd build ; make
+
+RUN cd build ; make check-clang
